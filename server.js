@@ -123,3 +123,10 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`High-performance SEO Domain Checker server running on port ${PORT}`);
 });
+// Add these lines near the top of server.js inside app.use middleware:
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    next();
+});
