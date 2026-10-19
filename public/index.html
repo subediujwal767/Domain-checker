@@ -103,11 +103,71 @@
     .prose p { color: var(--text-muted); margin-bottom: 20px; font-size: 1rem; }
     .prose strong { color: var(--text-main); }
 
-    /* FAQ */
-    .faq-section { max-width: 800px; margin: 0 auto 60px auto; padding: 0 5%; }
-    .faq-section details { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 15px; padding: 18px 20px; cursor: pointer; }
-    .faq-section summary { font-weight: bold; font-size: 1.05rem; outline: none; }
-    .faq-section p { color: var(--text-muted); margin-top: 10px; font-size: 0.95px; }
+    
+/* FAQ Section */
+.faq-section {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 60px;
+  padding: 40px 5%;
+  color: var(--text-main);
+}
+
+.faq-section .section-heading {
+  text-align: center;
+  margin: 0 auto 35px;
+}
+
+.faq-section .section-heading h2 {
+  color: var(--text-main);
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+.faq-section details {
+  display: block;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  margin-bottom: 15px;
+  padding: 20px;
+}
+
+.faq-section summary {
+  display: list-item;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1.6;
+}
+
+.faq-section details[open] {
+  border-color: var(--accent);
+}
+
+.faq-section details p {
+  display: block;
+  color: var(--text-muted);
+  margin-top: 12px;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 600px) {
+  .faq-section {
+    padding: 30px 5%;
+  }
+
+  .faq-section .section-heading h2 {
+    font-size: 1.6rem;
+  }
+
+  .faq-section details {
+    padding: 16px;
+  }
+}
 
     /* Footer */
     .site-footer { background: var(--card-bg); border-top: 1px solid var(--card-border); padding: 50px 5% 30px 5%; margin-top: 40px; }
