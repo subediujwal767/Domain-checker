@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://domain-checker-oh01.onrender.com/sitemap.xml
