@@ -128,3 +128,6 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`High-performance SEO Domain Checker server running on port ${PORT}`);
 });
+app.get('/ads.txt', (req, res) => {
+  res.sendFile(__dirname + '/ads.txt');
+});
