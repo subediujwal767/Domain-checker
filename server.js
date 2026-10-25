@@ -4,15 +4,50 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 1. Security & Parsing Middleware (Must be before routes)
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    next();
+});
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Serve static frontend files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
 
-/**
- * High-Accuracy Domain Checker API Endpoint
- * Uses official RDAP (Registration Data Access Protocol) registry servers
- * with automatic Cloudflare DoH fallback for max reliability.
- */
+// 2. Dynamic SEO Routes (robots.txt & sitemap.xml)
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.send("User-agent: *\nAllow: /\nSitemap: https://domain-checker-oh01.onrender.com/sitemap.xml");
+});
+
+app.get('/sitemap.xml', (req, res) => {
+    res.type('application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://domain-checker-oh01.onrender.com/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://domain-checker-oh01.onrender.com/about.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://domain-checker-oh01.onrender.com/privacy.html</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://domain-checker-oh01.onrender.com/terms.html</loc>
+    <priority>0.5</priority>
+  </url>
+</urlset>`);
+});
+
+// 3. Domain Checker API Endpoint
 app.get('/api/check-domain', async (req, res) => {
     const domain = req.query.domain ? req.query.domain.trim().toLowerCase() : '';
 
@@ -40,10 +75,10 @@ app.get('/api/check-domain', async (req, res) => {
             });
 
             if (rdapResponse.status === 200) {
-                // Status 200 OK -> Registered in database (TAKEN)
+                // Status 200 OK -> Registered (TAKEN)
                 isRegistered = true;
             } else if (rdapResponse.status === 404) {
-                // Status 404 Not Found -> Unregistered in database (AVAILABLE)
+                // Status 404 Not Found -> Unregistered (AVAILABLE)
                 isRegistered = false;
             } else {
                 // Fallback to DNS if RDAP rate-limits or returns error
@@ -84,50 +119,12 @@ async function checkViaDNS(domain) {
     }
 }
 
-/**
- * Dynamic SEO Routes: robots.txt & sitemap.xml
- */
-app.get('/robots.txt', (req, res) => {
-    res.type('text/plain');
-    res.send("User-agent: *\nAllow: /\nSitemap: https://domain-checker-oh01.onrender.com/sitemap.xml");
-});
-
-app.get('/sitemap.xml', (req, res) => {
-    res.type('application/xml');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://domain-checker-oh01.onrender.com/</loc>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://domain-checker-oh01.onrender.com/about.html</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://domain-checker-oh01.onrender.com/privacy.html</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://domain-checker-oh01.onrender.com/terms.html</loc>
-    <priority>0.5</priority>
-  </url>
-</urlset>`);
-});
-
-// Fallback route for static page requests
+// 4. Wildcard Catch-All Route for Frontend Pages
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// 5. Server Listener
 app.listen(PORT, () => {
     console.log(`High-performance SEO Domain Checker server running on port ${PORT}`);
 });
-// Add these lines near the top of server.js inside app.use middleware:
-app.use((req, res, next) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    next();
-});
-app.use(express.static('public'));
